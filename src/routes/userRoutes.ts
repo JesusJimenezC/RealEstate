@@ -1,26 +1,32 @@
 import express, { type Router } from "express";
 import {
-  formForgotPassword,
-  formLogin,
-  formRegister,
-  login,
-  newPassword,
-  register,
-  resetPassword,
-  verifyAccount,
-  verifyToken,
+  forgotPasswordView,
+  loginView,
+  formView,
+  loginAccount,
+  resetPasswordAccount,
+  registerAccount,
+  forgotPasswordAccount,
+  verifyAccountView,
+  resetPasswordView,
 } from "../controllers/userController.ts";
 
 const router: Router = express.Router();
 
-router.route("/login").get(formLogin).post(login);
+router.route("/login").get(loginView).post(loginAccount);
 
-router.route("/register").get(formRegister).post(register);
+router.route("/register").get(formView).post(registerAccount);
 
-router.route("/forgot-password").get(formForgotPassword).post(resetPassword);
+router
+  .route("/forgot-password")
+  .get(forgotPasswordView)
+  .post(forgotPasswordAccount);
 
-router.route("/verify/:token").get(verifyAccount);
+router.route("/verify/:token").get(verifyAccountView);
 
-router.route("/reset-password/:token").get(verifyToken).post(newPassword);
+router
+  .route("/reset-password/:token")
+  .get(resetPasswordView)
+  .post(resetPasswordAccount);
 
 export default router;

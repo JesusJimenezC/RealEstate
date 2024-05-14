@@ -6,13 +6,16 @@ import {
   validationResult,
 } from "express-validator";
 
-const propertiesView = (req: Request, res: Response): void => {
+const propertiesView = (_req: Request, res: Response): void => {
   res.render("properties/admin", {
     page: "My Properties",
   });
 };
 
-const createView = async (req: Request, res: Response): Promise<void> => {
+const createPropertyView = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   const [categories, prices]: [Category[], Price[]] = await Promise.all([
     Category.findAll(),
     Price.findAll(),
@@ -60,10 +63,10 @@ const createProperty = async (req: Request, res: Response): Promise<void> => {
     lat,
     lng,
   } = req.body;
-  const { id: userId } = req.user;
+
+  const { id: userId } = req.user ?? { id: undefined };
 
   try {
-    console.log(street);
     const propertySaved: Property = await Property.create({
       title,
       description,
@@ -95,10 +98,19 @@ const createProperty = async (req: Request, res: Response): Promise<void> => {
 };
 
 const addImageView = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+
+  const property: Property | null = await Property.findByPk(id);
+
+  if (!property || property.published || property.userIdFK !== req.user?.id) {
+    return res.redirect("/my-properties");
+  }
+
   res.render("properties/add-image", {
-    page: "Add Image",
-    propertyId: req.params.id,
+    page: `Add image to: ${property.title}`,
+    csrfToken: req.csrfToken?.(),
+    property,
   });
 };
 
-export { propertiesView, createView, createProperty, addImageView };
+export { propertiesView, createPropertyView, createProperty, addImageView };

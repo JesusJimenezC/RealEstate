@@ -9,15 +9,15 @@ import {
 import { generateId } from "../helpers/token.ts";
 import { emailForgotPassword, registerEmail } from "../helpers/emails.ts";
 
-const formLogin = (req: Request, res: Response): void => {
+const loginView = (req: Request, res: Response): void => {
   res.render("auth/login", {
     page: "Sign in",
     csrfToken: req.csrfToken?.(),
   });
 };
 
-const login = async (req: Request, res: Response): Promise<void> => {
-  const { email, password, id, name } = req.body;
+const loginAccount = async (req: Request, res: Response): Promise<void> => {
+  const { email, password } = req.body;
 
   // Validation
   await check("email")
@@ -103,14 +103,14 @@ const login = async (req: Request, res: Response): Promise<void> => {
     .redirect("/my-properties");
 };
 
-const formRegister = (req: Request, res: Response): void => {
+const formView = (req: Request, res: Response): void => {
   res.render("auth/register", {
     page: "Create account",
     csrfToken: req.csrfToken?.(),
   });
 };
 
-const register = async (req: Request, res: Response): Promise<void> => {
+const registerAccount = async (req: Request, res: Response): Promise<void> => {
   const { name, email, password } = req.body;
 
   // Validation
@@ -186,7 +186,10 @@ const register = async (req: Request, res: Response): Promise<void> => {
   });
 };
 
-const verifyAccount = async (req: Request, res: Response): Promise<void> => {
+const verifyAccountView = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   const { token } = req.params;
 
   const user: User | null = await User.findOne({
@@ -215,14 +218,17 @@ const verifyAccount = async (req: Request, res: Response): Promise<void> => {
   });
 };
 
-const formForgotPassword = (req: Request, res: Response): void => {
+const forgotPasswordView = (req: Request, res: Response): void => {
   res.render("auth/forgot-password", {
     page: "Recover your access",
     csrfToken: req.csrfToken?.(),
   });
 };
 
-const resetPassword = async (req: Request, res: Response): Promise<void> => {
+const forgotPasswordAccount = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   // Validation
   await check("email")
     .isEmail()
@@ -263,7 +269,10 @@ const resetPassword = async (req: Request, res: Response): Promise<void> => {
   });
 };
 
-const verifyToken = async (req: Request, res: Response): Promise<void> => {
+const resetPasswordView = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   const { token } = req.params;
 
   const user: User | null = await User.findOne({
@@ -288,7 +297,10 @@ const verifyToken = async (req: Request, res: Response): Promise<void> => {
   });
 };
 
-const newPassword = async (req: Request, res: Response): Promise<void> => {
+const resetPasswordAccount = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
   const { token } = req.params;
   const { password } = req.body;
 
@@ -340,13 +352,13 @@ const newPassword = async (req: Request, res: Response): Promise<void> => {
 };
 
 export {
-  formLogin,
-  formRegister,
-  formForgotPassword,
-  register,
-  verifyAccount,
-  resetPassword,
-  verifyToken,
-  newPassword,
-  login,
+  loginView,
+  formView,
+  forgotPasswordView,
+  registerAccount,
+  verifyAccountView,
+  forgotPasswordAccount,
+  resetPasswordView,
+  resetPasswordAccount,
+  loginAccount,
 };

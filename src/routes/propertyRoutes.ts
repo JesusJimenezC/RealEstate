@@ -1,7 +1,7 @@
 import express, { type Router } from "express";
 import {
   propertiesView,
-  createView,
+  createPropertyView,
   createProperty,
   addImageView,
 } from "../controllers/propertyController.ts";
@@ -14,7 +14,7 @@ router.route("/my-properties").get(secureRoute, propertiesView);
 
 router
   .route("/properties/create")
-  .get(secureRoute, createView)
+  .get(secureRoute, createPropertyView)
   .post(
     secureRoute,
     body("title").notEmpty().withMessage("Title is mandatory."),
@@ -32,6 +32,6 @@ router
     createProperty,
   );
 
-router.route("/properties/add-image/:id").get(secureRoute, addImageView);
+router.route("/properties/add-image/:id").get(secureRoute, addImageView).post();
 
 export default router;
