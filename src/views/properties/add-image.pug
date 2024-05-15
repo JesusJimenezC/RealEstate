@@ -1,8 +1,8 @@
 extends ../layout/admin
 
 block styles
+    meta(name="csrfToken" content=csrfToken)
     link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/dropzone.css")
-    meta(name="csrf-token" content=csrfToken)
 
 block content
     div(class="py-10")
@@ -14,7 +14,7 @@ block content
             form(id="image" class="dropzone border-dashed border-2 w-full min:h-96 h-auto rounded flex-col justify-center items-center" method="POST" action=`/properties/add-image/${property.id}`)
                 input(type="hidden" name="csrfToken" value=csrfToken)
 
-            input(class="w-full mt-5 py-3 bg-indigo-600 hover:bg-indigo-700 rounded text-white font-bold uppercase cursor-pointer" type="submit" value="Publish Property")
+            button(class="w-full mt-5 py-3 bg-indigo-600 hover:bg-indigo-700 rounded text-white font-bold uppercase cursor-pointer" type="button" id="submit") Publish Property
 
 block scripts
     script(src="/js/addImage.js")

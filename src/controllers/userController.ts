@@ -12,7 +12,7 @@ import { emailForgotPassword, registerEmail } from "../helpers/emails.ts";
 const loginView = (req: Request, res: Response): void => {
   res.render("auth/login", {
     page: "Sign in",
-    csrfToken: req.csrfToken?.(),
+    csrfToken: req.csrfToken(),
   });
 };
 
@@ -36,7 +36,7 @@ const loginAccount = async (req: Request, res: Response): Promise<void> => {
     return res.render("auth/login", {
       page: "Sign in",
       errors,
-      csrfToken: req.csrfToken?.(),
+      csrfToken: req.csrfToken(),
       user: {
         email,
       },
@@ -52,7 +52,7 @@ const loginAccount = async (req: Request, res: Response): Promise<void> => {
   if (!user) {
     return res.render("auth/login", {
       page: "Sign in",
-      csrfToken: req.csrfToken?.(),
+      csrfToken: req.csrfToken(),
       errors: [
         {
           msg: "User does not exist.",
@@ -67,7 +67,7 @@ const loginAccount = async (req: Request, res: Response): Promise<void> => {
   if (!user.verified) {
     return res.render("auth/login", {
       page: "Sign in",
-      csrfToken: req.csrfToken?.(),
+      csrfToken: req.csrfToken(),
       errors: [
         {
           msg: "User is not verified. Check your email for the confirmation link.",
@@ -82,7 +82,7 @@ const loginAccount = async (req: Request, res: Response): Promise<void> => {
   if (!(await user.validPassword(password))) {
     return res.render("auth/login", {
       page: "Sign in",
-      csrfToken: req.csrfToken?.(),
+      csrfToken: req.csrfToken(),
       errors: [
         {
           msg: "User or password is incorrect.",
@@ -106,7 +106,7 @@ const loginAccount = async (req: Request, res: Response): Promise<void> => {
 const formView = (req: Request, res: Response): void => {
   res.render("auth/register", {
     page: "Create account",
-    csrfToken: req.csrfToken?.(),
+    csrfToken: req.csrfToken(),
   });
 };
 
@@ -135,7 +135,7 @@ const registerAccount = async (req: Request, res: Response): Promise<void> => {
     return res.render("auth/register", {
       page: "Create account",
       errors,
-      csrfToken: req.csrfToken?.(),
+      csrfToken: req.csrfToken(),
       user: {
         name,
         email,
@@ -153,7 +153,7 @@ const registerAccount = async (req: Request, res: Response): Promise<void> => {
   if (user) {
     return res.render("auth/register", {
       page: "Create account",
-      csrfToken: req.csrfToken?.(),
+      csrfToken: req.csrfToken(),
       errors: [
         {
           msg: "User already exists.",
@@ -221,7 +221,7 @@ const verifyAccountView = async (
 const forgotPasswordView = (req: Request, res: Response): void => {
   res.render("auth/forgot-password", {
     page: "Recover your access",
-    csrfToken: req.csrfToken?.(),
+    csrfToken: req.csrfToken(),
   });
 };
 
@@ -242,7 +242,7 @@ const forgotPasswordAccount = async (
     return res.render("auth/forgot-password", {
       page: "Regain access to RealEstate",
       errors,
-      csrfToken: req.csrfToken?.(),
+      csrfToken: req.csrfToken(),
     });
   }
 
@@ -292,7 +292,7 @@ const resetPasswordView = async (
 
   res.render("auth/reset-password", {
     page: "Reset password",
-    csrfToken: req.csrfToken?.(),
+    csrfToken: req.csrfToken(),
     token,
   });
 };
@@ -321,7 +321,7 @@ const resetPasswordAccount = async (
     return res.render("auth/reset-password", {
       page: "Reset password",
       errors,
-      csrfToken: req.csrfToken?.(),
+      csrfToken: req.csrfToken(),
       token,
     });
   }

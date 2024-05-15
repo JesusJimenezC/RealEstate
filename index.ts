@@ -1,4 +1,4 @@
-import express, { type Express, type Request } from "express";
+import express, { type Express } from "express";
 import userRoutes from "./src/routes/userRoutes.ts";
 import db from "./src/config/db.ts";
 import cookieParser from "cookie-parser";

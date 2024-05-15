@@ -1,6 +1,6 @@
 import { Dropzone } from "dropzone";
 
-const token = document.querySelector('meta[name="csrf-token"]').content;
+const token = document.querySelector('meta[name="csrfToken"]').content;
 
 Dropzone.options.image = {
   acceptedFiles: ".png, .jpg, .jpeg",
@@ -10,6 +10,22 @@ Dropzone.options.image = {
   autoProcessQueue: false,
   addRemoveLinks: true,
   headers: {
-    "CSRF-Token": token,
+    "x-csrf-token": token,
+  },
+  paramName: "image",
+  init: function () {
+    const dropzone = this;
+    const submitBtn = document.querySelector("#submit");
+
+    submitBtn.addEventListener("click", function (e) {
+      dropzone.processQueue();
+    });
+
+    dropzone.on("queuecomplete", function () {
+      console.log("queuecomplete");
+      if (dropzone.getActiveFiles().length === 0) {
+        window.location.href = "/my-properties";
+      }
+    });
   },
 };
