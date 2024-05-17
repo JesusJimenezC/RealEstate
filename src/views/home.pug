@@ -1,0 +1,45 @@
+extends ./layout/app
+
+block styles
+    link(rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css")
+
+block content
+    div(class="py-5")
+        h1(class="text-center text-4xl font-extrabold") Location on the map
+
+        div(class="flex flex-col md:flex-row items-center py-10 gap-4")
+            h2(class="text-sm uppercase text-gray-800 font-bold") filter Properties:
+
+            div(class="w-full md:w-auto flex items-center gap-2")
+                label(for="categories" class="flex-1 text-sm w-24 uppercase text-gray-500 font-bold") Categories
+                select(id="categories" class="bg-white w-full px-3 py-2 border border-gray-300 rounded-md shadow")
+                    option(value="0") All
+                    each category in categories
+                        option(value=category.id class="capitalize")= category.name
+
+            div(class="w-full md:w-auto flex items-center gap-2")
+                label(for="prices" class="flex-1 text-sm w-24 uppercase text-gray-500 font-bold") Prices
+                select(id="prices" class="bg-white w-full px-3 py-2 border border-gray-300 rounded-md shadow")
+                    option(value="0") All
+                    each price in prices
+                        option(value=price.id)= price.name
+
+        div(id="start-map" class="h-[600px] mt-5")
+
+        section(class="py-5")
+            h2(class="text-center text-4xl font-extrabold pt-10") Warehouse for sell
+
+            div(class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-14")
+                each property in warehouses
+                    include ./templates/card
+
+        section(class="py-5")
+            h2(class="text-center text-4xl font-extrabold pt-10") Departments for sell
+
+            div(class="grid grid-cols-1 lg:grid-cols-3 gap-5 mt-14")
+                each property in departments
+                  include ./templates/card
+
+block scripts
+    script(src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js")
+    script(src="/js/startMap.js")

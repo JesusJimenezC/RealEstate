@@ -8,6 +8,7 @@ import {
   editPropertyView,
   editProperty,
   deleteProperty,
+  showPropertyView,
 } from "../controllers/propertyController.ts";
 import { body } from "express-validator";
 import secureRoute from "../middleware/secureRoute.ts";
@@ -63,5 +64,7 @@ router
   );
 
 router.route("/properties/delete/:id").post(secureRoute, deleteProperty);
+
+router.route("/property/:id").get(showPropertyView);
 
 export default router;

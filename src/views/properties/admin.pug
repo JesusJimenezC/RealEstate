@@ -15,9 +15,9 @@ block content
                       li
                         div(class="p-6 w-full flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-8 md:space-y-0 gap-4")
                             div(class="sm:w-1/ md:w-1/6")
-                                img(src=`/uploads/${property.image}`, alt=property.name class="w-full block rounded")
+                                img(src=`/uploads/${property.image}` alt=property.name class="w-full block rounded")
                             div(class="sm:w-2/4 md:w-3/6 lg:w-4/6 space-y-3")
-                                a(href="#" class="block text-2xl font-extrabold text-indigo-600 truncate")= property.title
+                                a(href=`/property/${property.id}` class="block text-2xl font-extrabold text-indigo-600 truncate")= property.title
                                 p(class="text-sm text-black font-bold capitalize")= property.category.name
                                 p(class="text-sm text-gray-500 font-bold flex items-center")
                                     svg(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6")
@@ -33,7 +33,20 @@ block content
                                 form(action=`/properties/delete/${property.id}` method="POST")
                                     input(type="hidden" name="csrfToken" value=csrfToken)
                                     input(type="submit" class="w-full cursor-pointer p-2 md:py-1 text-xs leading-5 font-semibold rounded bg-red-100 text-red-800" value="Delete")
-
+                div(class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6")
+                    div(class="flex-1 flex justify-between sm:hidden")
+                        a(href=`/my-properties?page=${currentPage - 1}` class=`relative inline-flex items-center px-4 py-2 border bg-white hover:bg-gray-50 text-sm font-medium ${currentPage === 1 ? 'text-gray-300 border-gray-300 pointer-events-none' : 'border-gray-700'}`) Previous
+                        a(href=`/my-properties?page=${currentPage + 1}` class=`relative inline-flex items-center px-4 py-2 border bg-white hover:bg-gray-50 text-sm font-medium ${currentPage === pages ? 'text-gray-300 border-gray-300 pointer-events-none' : 'border-gray-700'}`) Next
+                    div(class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between")
+                        p(class="text-sm text-gray-700 gap-2") Showing
+                            span(class="font-medium ml-1") #{offset + 1} to
+                            span(class="font-medium ml-1") #{(limit + offset) > total ? total : (limit + offset)} of
+                            span(class="font-medium ml-1") #{total} results
+                    div(class="hidden sm:block")
+                        nav(class="relative z-0 inline-flex rounded-md shadow-md")
+                            - let n = 1;
+                              while n <= pages
+                                a(href=`/my-properties?page=${n}` class=`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${currentPage === n ? 'bg-indigo-50 border-indigo-500 text-indigo-600' : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'}`) #{n++}
 
         else
             p(class="text-center") No properties found

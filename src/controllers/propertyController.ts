@@ -8,31 +8,59 @@ import {
 import { unlink } from "node:fs/promises";
 
 const propertiesView = async (req: Request, res: Response): Promise<void> => {
-  const { id } = req.user ?? { id: undefined };
+  const { page: currentPage } = req.query;
+  const expression = /^[1-9]$/;
 
-  const properties = await Property.findAll({
-    where: {
-      userIdFK: id,
-    },
-    include: [
-      {
-        model: Price,
-        as: "price",
-        attributes: ["name"],
-      },
-      {
-        model: Category,
-        as: "category",
-        attributes: ["name"],
-      },
-    ],
-  });
+  if (!expression.test(<string>currentPage)) {
+    return res.redirect("/my-properties?page=1");
+  }
 
-  res.render("properties/admin", {
-    page: "My Properties",
-    properties,
-    csrfToken: req.csrfToken(),
-  });
+  try {
+    const { id } = req.user ?? { id: undefined };
+    const limit = 10;
+    const offset = Number(currentPage) * limit - limit;
+
+    const [properties, total] = await Promise.all([
+      await Property.findAll({
+        limit,
+        offset,
+        where: {
+          userIdFK: id,
+        },
+        include: [
+          {
+            model: Price,
+            as: "price",
+            attributes: ["name"],
+          },
+          {
+            model: Category,
+            as: "category",
+            attributes: ["name"],
+          },
+        ],
+      }),
+      await Property.count({
+        where: {
+          userIdFK: id,
+        },
+      }),
+    ]);
+
+    res.render("properties/admin", {
+      page: "My Properties",
+      properties,
+      csrfToken: req.csrfToken(),
+      pages: Math.ceil(total / limit),
+      currentPage: Number(currentPage),
+      total,
+      offset,
+      limit,
+    });
+  } catch (error) {
+    console.log(error);
+    res.redirect("/my-properties");
+  }
 };
 
 const createPropertyView = async (
@@ -274,6 +302,37 @@ const deleteProperty = async (req: Request, res: Response): Promise<void> => {
   res.redirect("/my-properties");
 };
 
+const showPropertyView = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+
+  const categories = await Category.findAll();
+
+  const property: Property | null = await Property.findByPk(id, {
+    include: [
+      {
+        model: Price,
+        as: "price",
+        attributes: ["name"],
+      },
+      {
+        model: Category,
+        as: "category",
+        attributes: ["name"],
+      },
+    ],
+  });
+
+  if (!property) {
+    return res.redirect("/404");
+  }
+
+  res.render("properties/show", {
+    page: property.title,
+    property,
+    categories,
+  });
+};
+
 export {
   propertiesView,
   createPropertyView,
@@ -283,4 +342,5 @@ export {
   editPropertyView,
   editProperty,
   deleteProperty,
+  showPropertyView,
 };

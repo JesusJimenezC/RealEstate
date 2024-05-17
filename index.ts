@@ -4,6 +4,8 @@ import db from "./src/config/db.ts";
 import cookieParser from "cookie-parser";
 import { doubleCsrf } from "csrf-csrf";
 import propertyRoutes from "./src/routes/propertyRoutes.ts";
+import appRoutes from "./src/routes/appRoutes";
+import apiRoutes from "./src/routes/apiRoutes";
 
 // App init
 const app: Express = express();
@@ -46,8 +48,10 @@ app.set("views", "./src/views");
 app.use(express.static("./src/public"));
 
 // Routing
+app.use("/", doubleCsrfProtection, appRoutes);
 app.use("/auth", doubleCsrfProtection, userRoutes);
 app.use("/", doubleCsrfProtection, propertyRoutes);
+app.use("/api", doubleCsrfProtection, apiRoutes);
 
 // Server
 app.listen(process.env.PORT || 3000, (): void => {

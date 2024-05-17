@@ -5,6 +5,8 @@ export default {
   entry: {
     map: "./src/public/work-js/map.js",
     addImage: "./src/public/work-js/addImage.js",
+    showMap: "./src/public/work-js/showMap.js",
+    startMap: "./src/public/work-js/startMap.js",
   },
   module: {
     rules: [

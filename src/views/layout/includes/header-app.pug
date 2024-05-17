@@ -1,0 +1,13 @@
+header(class="bg-indigo-600 p-4")
+    div(class="container mx-auto flex justify-between items-center")
+        h1(class="text-2xl text-white font-extrabold text-center") Real
+            span(class="font-normal") Estate
+
+        nav(class="my-5 text-sm font-bold text-white md:items-center md:gap-3 md:flex hidden")
+            a(href="/auth/register") Sign up
+            a(href="/auth/login") Sign in
+
+div(class="bg-indigo-700 py-5 hidden lg:block")
+    div(class="container mx-auto flex justify-between")
+        each category in categories
+            a(href=`/categories/${category.id}` class="text-sm font-bold uppercase text-white")= category.name
