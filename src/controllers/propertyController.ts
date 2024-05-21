@@ -39,6 +39,7 @@ const propertiesView = async (req: Request, res: Response): Promise<void> => {
             attributes: ["name"],
           },
         ],
+        order: [["createdAt", "DESC"]],
       }),
       await Property.count({
         where: {
@@ -330,6 +331,7 @@ const showPropertyView = async (req: Request, res: Response): Promise<void> => {
     page: property.title,
     property,
     categories,
+    csrfToken: req.csrfToken(),
   });
 };
 

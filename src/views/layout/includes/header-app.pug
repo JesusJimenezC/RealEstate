@@ -1,13 +1,21 @@
 header(class="bg-indigo-600 p-4")
     div(class="container mx-auto flex justify-between items-center")
-        h1(class="text-2xl text-white font-extrabold text-center") Real
-            span(class="font-normal") Estate
+        a(href="/")
+            h1(class="text-2xl text-white font-extrabold text-center") Real
+                span(class="font-normal") Estate
 
         nav(class="my-5 text-sm font-bold text-white md:items-center md:gap-3 md:flex hidden")
             a(href="/auth/register") Sign up
             a(href="/auth/login") Sign in
 
 div(class="bg-indigo-700 py-5 hidden lg:block")
-    div(class="container mx-auto flex justify-between")
-        each category in categories
-            a(href=`/categories/${category.id}` class="text-sm font-bold uppercase text-white")= category.name
+    div(class="container mx-auto flex justify-between items-center")
+        nav(class="flex gap-4")
+          each category in categories
+              a(href=`/categories/${category.id}` class="text-sm font-bold uppercase text-white")= category.name
+
+        form(action="/search" method="POST" class="flex gap-3 items-center")
+            input(type="hidden" name="csrfToken" value=csrfToken)
+            label(for="term" class="text-sm text-white uppercase font-bold") Search
+            input(type="text" id="term" name="term" class="p-2 rounded-lg shadow text-sm" placeholder="Search properties")
+            button(type="submit" class="bg-indigo-800 rounded-lg text-white uppercase font-bold p-2 hover:bg-indigo-400 cursor-pointer") Search

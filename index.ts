@@ -30,7 +30,6 @@ const { doubleCsrfProtection } = doubleCsrf({
 try {
   await db.authenticate();
   await db.sync();
-  console.log("Database Connected");
 } catch (error) {
   console.log(error);
 }
@@ -57,5 +56,3 @@ app.use("/api", doubleCsrfProtection, apiRoutes);
 app.listen(process.env.PORT || 3000, (): void => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
-
-export { doubleCsrfProtection };
