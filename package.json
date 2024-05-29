@@ -45,6 +45,7 @@
     "db:import": "bun run src/seed/seeder.ts -i",
     "db:delete": "bun run src/seed/seeder.ts -d",
     "js": "webpack --watch",
-    "dev": "concurrently \"bun run serve\" \"bun run tailwindcss\" \"bun run js\""
+    "dev": "concurrently \"bun run serve\" \"bun run tailwindcss\" \"bun run js\"",
+    "build": "bun run tailwindcss && bun run js"
   }
 }
