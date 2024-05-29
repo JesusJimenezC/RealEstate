@@ -14,7 +14,7 @@ RealEstateApp is a web application built with Bun and TypeScript. This project u
 
 1. Clone the repository:
     ```bash
-    git clone [https://github.com/yourusername/RealEstateApp.git](https://github.com/JesusJimenezC/RealEstate)
+    git clone https://github.com/JesusJimenezC/RealEstate
     ```
 
 2. Navigate to the project directory:
