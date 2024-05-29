@@ -7,18 +7,19 @@ export default {
     addImage: "./src/public/work-js/addImage.js",
     showMap: "./src/public/work-js/showMap.js",
     startMap: "./src/public/work-js/startMap.js",
+    changeState: "./src/public/work-js/changeState.js",
   },
   module: {
     rules: [
       {
-        test: /\.tsx?$/, // Regex para archivos .ts y .tsx
+        test: /\.tsx?$/,
         use: "ts-loader",
         exclude: /node_modules/,
       },
     ],
   },
   resolve: {
-    extensions: [".tsx", ".ts", ".js"], // Añade '.ts' y '.tsx' como extensiones resolubles
+    extensions: [".tsx", ".ts", ".js"],
   },
   output: {
     filename: "[name].js",

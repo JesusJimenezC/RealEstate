@@ -9,6 +9,7 @@ import {
   forgotPasswordAccount,
   verifyAccountView,
   resetPasswordView,
+  logoutAccount,
 } from "../controllers/userController.ts";
 
 const router: Router = express.Router();
@@ -16,6 +17,8 @@ const router: Router = express.Router();
 router.route("/login").get(loginView).post(loginAccount);
 
 router.route("/register").get(formView).post(registerAccount);
+
+router.route("/logout").post(logoutAccount);
 
 router
   .route("/forgot-password")

@@ -1,6 +1,6 @@
 import type { NextFunction, Response, Request } from "express";
 import jwt from "jsonwebtoken";
-import { User } from "../models";
+import User from "../models/User";
 
 const secureRoute = async (
   req: Request,
@@ -17,9 +17,10 @@ const secureRoute = async (
   try {
     const decoded: { id: number; name: string } = jwt.verify(
       _token,
-      process.env.JWT_SECRET || "secret_key",
+      process.env.JWT_SECRET_KEY || "secret_key",
     ) as { id: number; name: string };
     const user = await User.scope("removePassword").findByPk(decoded.id);
+    console.log({ user });
 
     // Save user in request
     if (!user) {

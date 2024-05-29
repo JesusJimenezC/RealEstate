@@ -1,5 +1,7 @@
 import type { Request, Response } from "express";
-import { Category, Price, Property } from "../models";
+import Category from "../models/Category";
+import Price from "../models/Price";
+import Property from "../models/Property";
 import { Op } from "sequelize";
 
 const homeView = async (req: Request, res: Response): Promise<void> => {

@@ -1,38 +1,22 @@
 import {
-  type InferAttributes,
-  type InferCreationAttributes,
+  Table,
+  Column,
   Model,
-  DataTypes,
-  type CreationOptional,
-} from "sequelize";
-import db from "../config/db.ts";
+  DataType,
+  PrimaryKey,
+  AllowNull,
+  AutoIncrement,
+} from "sequelize-typescript";
 
-class Category extends Model<
-  InferAttributes<Category>,
-  InferCreationAttributes<Category>
-> {
-  declare id: CreationOptional<number>;
+@Table({ tableName: "categories", timestamps: false })
+export default class Category extends Model {
+  @PrimaryKey
+  @AutoIncrement
+  @AllowNull(false)
+  @Column(DataType.INTEGER)
+  declare id: number;
+
+  @AllowNull(false)
+  @Column(DataType.STRING(30))
   declare name: string;
 }
-
-Category.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    name: {
-      type: new DataTypes.STRING(30),
-      allowNull: false,
-    },
-  },
-  {
-    sequelize: db,
-    modelName: "Category",
-    timestamps: false,
-    tableName: "categories",
-  },
-);
-
-export default Category;

@@ -23,7 +23,7 @@ block content
 
                     div
                         label(class="block text-sm uppercase text-gray-500 mb-2 font-bold" for="title") Property Name
-                        input(id="title" class="w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400" placeholder="Property name, ex. House on the beach" type="text" name="title" value=data.title ? data.title : "")
+                        input(id="title" class="w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400" placeholder="Property name, ex. House on the beach" type="text" name="title" value=`${data.title ? data.title : ""}`)
                     div
                         label(class="block text-sm uppercase text-gray-500 mb-2 font-bold" for="description") Description
                         textarea(id="description" class="w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400" placeholder="Property description" name="description")= data.description ? data.description : ""

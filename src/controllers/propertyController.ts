@@ -1,11 +1,16 @@
 import type { NextFunction, Request, Response } from "express";
-import { Category, Price, Property } from "../models";
 import {
   type Result,
   type ValidationError,
   validationResult,
 } from "express-validator";
 import { unlink } from "node:fs/promises";
+import { isOwner } from "../helpers";
+import Property from "../models/Property";
+import Price from "../models/Price";
+import Category from "../models/Category";
+import Message from "../models/Message";
+import User from "../models/User.ts";
 
 const propertiesView = async (req: Request, res: Response): Promise<void> => {
   const { page: currentPage } = req.query;
@@ -37,6 +42,10 @@ const propertiesView = async (req: Request, res: Response): Promise<void> => {
             model: Category,
             as: "category",
             attributes: ["name"],
+          },
+          {
+            model: Message,
+            as: "messages",
           },
         ],
         order: [["createdAt", "DESC"]],
@@ -154,7 +163,11 @@ const addImageView = async (req: Request, res: Response): Promise<void> => {
 
   const property: Property | null = await Property.findByPk(id);
 
-  if (!property || property.published || property.userIdFK !== req.user?.id) {
+  if (
+    !property ||
+    property.published ||
+    Number(property.userIdFK) !== req.user?.id
+  ) {
     return res.redirect("/my-properties");
   }
 
@@ -174,7 +187,11 @@ const saveImage = async (
 
   const property: Property | null = await Property.findByPk(id);
 
-  if (!property || property.published || property.userIdFK !== req.user?.id) {
+  if (
+    !property ||
+    property.published ||
+    Number(property.userIdFK) !== req.user?.id
+  ) {
     return res.redirect("/my-properties");
   }
 
@@ -195,7 +212,7 @@ const editPropertyView = async (req: Request, res: Response): Promise<void> => {
 
   const property: Property | null = await Property.findByPk(id);
 
-  if (!property || property.userIdFK !== req.user?.id) {
+  if (!property || Number(property.userIdFK) !== req.user?.id) {
     return res.redirect("/my-properties");
   }
 
@@ -218,7 +235,7 @@ const editProperty = async (req: Request, res: Response): Promise<void> => {
 
   const property: Property | null = await Property.findByPk(id);
 
-  if (!property || property.userIdFK !== req.user?.id) {
+  if (!property || Number(property.userIdFK) !== req.user?.id) {
     return res.redirect("/my-properties");
   }
 
@@ -290,7 +307,7 @@ const deleteProperty = async (req: Request, res: Response): Promise<void> => {
 
   const property: Property | null = await Property.findByPk(id);
 
-  if (!property || property.userIdFK !== req.user?.id) {
+  if (!property || Number(property.userIdFK) !== req.user?.id) {
     return res.redirect("/my-properties");
   }
 
@@ -301,6 +318,27 @@ const deleteProperty = async (req: Request, res: Response): Promise<void> => {
   await property.destroy();
 
   res.redirect("/my-properties");
+};
+
+const modifyStateProperty = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const { id } = req.params;
+
+  const property: Property | null = await Property.findByPk(id);
+
+  if (!property || Number(property.userIdFK) !== req.user?.id) {
+    return res.redirect("/my-properties");
+  }
+
+  property.published = !property.published;
+
+  await property.save();
+
+  res.json({
+    result: true,
+  });
 };
 
 const showPropertyView = async (req: Request, res: Response): Promise<void> => {
@@ -323,7 +361,7 @@ const showPropertyView = async (req: Request, res: Response): Promise<void> => {
     ],
   });
 
-  if (!property) {
+  if (!property || !property.published) {
     return res.redirect("/404");
   }
 
@@ -332,6 +370,94 @@ const showPropertyView = async (req: Request, res: Response): Promise<void> => {
     property,
     categories,
     csrfToken: req.csrfToken(),
+    user: req.user,
+    isOwner: isOwner(req.user?.id ?? NaN, Number(property.userIdFK)),
+  });
+};
+
+const sendMessage = async (req: Request, res: Response): Promise<void> => {
+  const { propertyId: id } = req.params;
+
+  const categories = await Category.findAll();
+
+  const property: Property | null = await Property.findByPk(id, {
+    include: [
+      {
+        model: Price,
+        as: "price",
+        attributes: ["name"],
+      },
+      {
+        model: Category,
+        as: "category",
+        attributes: ["name"],
+      },
+    ],
+  });
+
+  if (!property) {
+    return res.redirect("/404");
+  }
+
+  const result: Result<ValidationError> = validationResult(req);
+
+  if (!result.isEmpty()) {
+    res.render("properties/show", {
+      page: property.title,
+      property,
+      categories,
+      csrfToken: req.csrfToken(),
+      user: req.user,
+      isOwner: isOwner(req.user?.id ?? NaN, Number(property.userIdFK)),
+      errors: result.array(),
+    });
+
+    return;
+  }
+
+  await Message.create({
+    message: req.body.message,
+    propertyIdFK: req.params.propertyId,
+    userIdFK: req.user?.id,
+  });
+
+  res.render("properties/show", {
+    page: property.title,
+    property,
+    categories,
+    csrfToken: req.csrfToken(),
+    user: req.user,
+    isOwner: isOwner(req.user?.id ?? NaN, Number(property.userIdFK)),
+    sent: true,
+  });
+};
+
+const readMessages = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+
+  const property: Property | null = await Property.findByPk(id, {
+    include: [
+      {
+        model: Message,
+        as: "messages",
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["name"],
+          },
+        ],
+      },
+    ],
+  });
+
+  if (!property || Number(property.userIdFK) !== req.user?.id) {
+    return res.redirect("/my-properties");
+  }
+
+  res.render("properties/messages", {
+    page: "Messages",
+    messages: property.messages,
   });
 };
 
@@ -345,4 +471,7 @@ export {
   editProperty,
   deleteProperty,
   showPropertyView,
+  sendMessage,
+  readMessages,
+  modifyStateProperty,
 };

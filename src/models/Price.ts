@@ -1,38 +1,22 @@
 import {
-  type InferAttributes,
-  type InferCreationAttributes,
+  Table,
+  Column,
   Model,
-  DataTypes,
-  type CreationOptional,
-} from "sequelize";
-import db from "../config/db.ts";
+  DataType,
+  PrimaryKey,
+  AllowNull,
+  AutoIncrement,
+} from "sequelize-typescript";
 
-class Price extends Model<
-  InferAttributes<Price>,
-  InferCreationAttributes<Price>
-> {
-  declare id: CreationOptional<number>;
+@Table({ tableName: "prices", timestamps: false })
+export default class Price extends Model {
+  @PrimaryKey
+  @AutoIncrement
+  @AllowNull(false)
+  @Column(DataType.INTEGER)
+  declare id: number;
+
+  @AllowNull(false)
+  @Column(DataType.STRING(30))
   declare name: string;
 }
-
-Price.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    name: {
-      type: new DataTypes.STRING(30),
-      allowNull: false,
-    },
-  },
-  {
-    sequelize: db,
-    modelName: "Price",
-    timestamps: false,
-    tableName: "prices",
-  },
-);
-
-export default Price;

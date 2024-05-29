@@ -1,92 +1,89 @@
 import {
-  type InferAttributes,
-  type InferCreationAttributes,
+  Table,
+  Column,
   Model,
-  DataTypes,
-  type CreationOptional,
-  type ForeignKey,
-} from "sequelize";
-import db from "../config/db.ts";
-import type Price from "./Price.ts";
-import type Category from "./Category.ts";
-import type User from "./User.ts";
+  ForeignKey,
+  BelongsTo,
+  DataType,
+  PrimaryKey,
+  Default,
+  AllowNull,
+  HasMany,
+} from "sequelize-typescript";
+import Price from "./Price";
+import Category from "./Category";
+import User from "./User";
+import Message from "./Message";
 
-class Property extends Model<
-  InferAttributes<Property>,
-  InferCreationAttributes<Property>
-> {
-  declare id: CreationOptional<string>;
+@Table({ tableName: "properties", timestamps: true })
+export default class Property extends Model {
+  @PrimaryKey
+  @Default(DataType.UUIDV4)
+  @AllowNull(false)
+  @Column(DataType.UUID)
+  declare id: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING(100))
   declare title: string;
+
+  @AllowNull(false)
+  @Column(DataType.TEXT)
   declare description: string;
+
+  @AllowNull(false)
+  @Column(DataType.INTEGER)
   declare rooms: number;
+
+  @AllowNull(false)
+  @Column(DataType.INTEGER)
   declare parking: number;
+
+  @AllowNull(false)
+  @Column(DataType.INTEGER)
   declare wc: number;
+
+  @AllowNull(false)
+  @Column(DataType.STRING(60))
   declare street: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
   declare lat: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
   declare lng: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING)
   declare image: string;
-  declare published: CreationOptional<boolean>;
 
-  declare priceIdFK: ForeignKey<Price["id"]>;
-  declare categoryIdFK: ForeignKey<Category["id"]>;
-  declare userIdFK: ForeignKey<User["id"]>;
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  declare published: boolean;
+
+  @ForeignKey(() => Price)
+  @Column
+  declare priceIdFK: string;
+
+  @ForeignKey(() => Category)
+  @Column
+  declare categoryIdFK: string;
+
+  @ForeignKey(() => User)
+  @Column
+  declare userIdFK: string;
+
+  @BelongsTo(() => Price)
+  declare price: Price;
+
+  @BelongsTo(() => Category)
+  declare category: Category;
+
+  @BelongsTo(() => User)
+  declare user: User;
+
+  @HasMany(() => Message)
+  declare messages: Message[];
 }
-
-Property.init(
-  {
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      allowNull: false,
-      primaryKey: true,
-    },
-    title: {
-      type: new DataTypes.STRING(100),
-      allowNull: false,
-    },
-    description: {
-      type: new DataTypes.TEXT(),
-      allowNull: false,
-    },
-    rooms: {
-      type: new DataTypes.INTEGER(),
-      allowNull: false,
-    },
-    parking: {
-      type: new DataTypes.INTEGER(),
-      allowNull: false,
-    },
-    wc: {
-      type: new DataTypes.INTEGER(),
-      allowNull: false,
-    },
-    street: {
-      type: new DataTypes.STRING(60),
-      allowNull: false,
-    },
-    lat: {
-      type: new DataTypes.STRING(),
-      allowNull: false,
-    },
-    lng: {
-      type: new DataTypes.STRING(),
-      allowNull: false,
-    },
-    image: {
-      type: new DataTypes.STRING(),
-      allowNull: false,
-    },
-    published: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-  },
-  {
-    sequelize: db,
-    modelName: "Property",
-    timestamps: true,
-    tableName: "properties",
-  },
-);
-
-export default Property;

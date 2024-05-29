@@ -9,10 +9,14 @@ import {
   editProperty,
   deleteProperty,
   showPropertyView,
+  sendMessage,
+  readMessages,
+  modifyStateProperty,
 } from "../controllers/propertyController.ts";
 import { body } from "express-validator";
 import secureRoute from "../middleware/secureRoute.ts";
 import upload from "../middleware/uploadImage.ts";
+import { identifyUser } from "../middleware/identifyUser.ts";
 
 const router: Router = express.Router();
 
@@ -65,6 +69,22 @@ router
 
 router.route("/properties/delete/:id").post(secureRoute, deleteProperty);
 
-router.route("/property/:id").get(showPropertyView);
+router.route("/properties/:id").put(secureRoute, modifyStateProperty);
+
+router.route("/property/:id").get(identifyUser, showPropertyView);
+
+router
+  .route("/property/:propertyId")
+  .post(
+    identifyUser,
+    body("message")
+      .isLength({ min: 10 })
+      .withMessage("Message needs at least 10 characters length")
+      .isLength({ max: 200 })
+      .withMessage("Message is to large. Maximum characters is 200"),
+    sendMessage,
+  );
+
+router.route("/messages/:id").get(secureRoute, readMessages);
 
 export default router;

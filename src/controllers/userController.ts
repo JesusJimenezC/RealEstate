@@ -1,5 +1,4 @@
 import type { Request, Response } from "express";
-import { User } from "../models";
 import {
   check,
   validationResult,
@@ -8,6 +7,7 @@ import {
 } from "express-validator";
 import { generateId } from "../helpers/token.ts";
 import { emailForgotPassword, registerEmail } from "../helpers/emails.ts";
+import User from "../models/User";
 
 const loginView = (req: Request, res: Response): void => {
   res.render("auth/login", {
@@ -175,7 +175,7 @@ const registerAccount = async (req: Request, res: Response): Promise<void> => {
     .then(({ name, email, token }): void => {
       registerEmail(name, email, token!);
     })
-    .catch((error): void => {
+    .catch((error: string): void => {
       console.error(error);
     });
 
@@ -351,6 +351,10 @@ const resetPasswordAccount = async (
   });
 };
 
+const logoutAccount = (_req: Request, res: Response): void => {
+  return res.clearCookie("_token").status(200).redirect("/auth/login");
+};
+
 export {
   loginView,
   formView,
@@ -361,4 +365,5 @@ export {
   resetPasswordView,
   resetPasswordAccount,
   loginAccount,
+  logoutAccount,
 };

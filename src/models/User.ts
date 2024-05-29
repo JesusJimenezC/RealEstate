@@ -1,28 +1,55 @@
 import {
-  type InferAttributes,
-  type InferCreationAttributes,
+  Table,
+  Column,
   Model,
-  DataTypes,
-  type CreationOptional,
-} from "sequelize";
-import db from "../config/db.ts";
+  DataType,
+  PrimaryKey,
+  Default,
+  AllowNull,
+  BeforeCreate,
+  Scopes,
+  AutoIncrement,
+} from "sequelize-typescript";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
-  declare id: CreationOptional<number>;
+@Table({ tableName: "users", timestamps: true })
+@Scopes(() => ({
+  removePassword: {
+    attributes: {
+      exclude: ["password", "token", "verified", "createdAt", "updatedAt"],
+    },
+  },
+}))
+export default class User extends Model {
+  @PrimaryKey
+  @AutoIncrement
+  @AllowNull(false)
+  @Column(DataType.INTEGER)
+  declare id: number;
+
+  @AllowNull(false)
+  @Column(DataType.STRING(128))
   declare name: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING(128))
   declare email: string;
+
+  @AllowNull(false)
+  @Column(DataType.STRING(128))
   declare password: string;
+
+  @AllowNull(true)
+  @Column(DataType.STRING(128))
   declare token: string | null;
-  declare verified: CreationOptional<boolean>;
+
+  @Default(false)
+  @Column(DataType.BOOLEAN)
+  declare verified: boolean;
 
   async validPassword(password: string): Promise<boolean> {
     return await bcrypt.compare(password, this.password);
-  }
-
-  async hashPassword(password: string): Promise<string> {
-    return await bcrypt.hash(password, 10);
   }
 
   async generateJWT(): Promise<string> {
@@ -31,60 +58,19 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
         id: this.id,
         name: this.name,
       },
-      process.env.JWT_SECRET || "secret_key",
+      process.env.JWT_SECRET_KEY || "secret_key",
       {
         expiresIn: "1d",
       },
     );
   }
+
+  async hashPassword(password: string): Promise<string> {
+    return (this.password = await bcrypt.hash(password, 10));
+  }
+
+  @BeforeCreate
+  static async hashPassword(user: User): Promise<void> {
+    user.password = await bcrypt.hash(user.password, 10);
+  }
 }
-
-User.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    name: {
-      type: new DataTypes.STRING(128),
-      allowNull: false,
-    },
-    email: {
-      type: new DataTypes.STRING(128),
-      allowNull: false,
-    },
-    password: {
-      type: new DataTypes.STRING(128),
-      allowNull: false,
-    },
-    token: {
-      type: new DataTypes.STRING(128),
-      allowNull: true,
-    },
-    verified: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-  },
-  {
-    sequelize: db,
-    modelName: "User",
-    timestamps: true,
-    tableName: "users",
-    hooks: {
-      beforeCreate: async (user: User): Promise<void> => {
-        user.password = await user.hashPassword(user.password);
-      },
-    },
-    scopes: {
-      removePassword: {
-        attributes: {
-          exclude: ["password", "token", "verified", "createdAt", "updatedAt"],
-        },
-      },
-    },
-  },
-);
-
-export default User;

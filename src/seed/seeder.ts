@@ -2,7 +2,9 @@ import { exit } from "node:process";
 import db from "../config/db.ts";
 import categories from "./categories.ts";
 import prices from "./prices.ts";
-import { User, Category, Price } from "../models";
+import User from "../models/User";
+import Category from "../models/Category";
+import Price from "../models/Price";
 import users from "./users.ts";
 
 const importData = async (): Promise<void> => {

@@ -8,7 +8,9 @@
     "@types/cookie-parser": "^1.4.7",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.12.12",
     "@types/nodemailer": "^6.4.14",
+    "@types/validator": "^13.11.10",
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",
     "postcss-cli": "^11.0.0",
@@ -33,7 +35,9 @@
     "mysql2": "^3.9.7",
     "nodemailer": "^6.9.13",
     "pug": "^3.0.2",
-    "sequelize": "^6.37.3"
+    "reflect-metadata": "^0.2.2",
+    "sequelize": "^6.37.3",
+    "sequelize-typescript": "^2.1.6"
   },
   "scripts": {
     "serve": "bun run --watch index.ts && watchcss",
